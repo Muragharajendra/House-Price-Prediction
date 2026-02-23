@@ -25,6 +25,13 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/")
+def root():
+    return {
+        "message": "House Price Prediction API. Use /health or POST /predict."
+    }
+
+
 @app.post("/predict")
 def predict(records: List[Dict[str, Any]]):
     try:
