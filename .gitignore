@@ -1,15 +1,16 @@
-# Model files (large binary files)
-model.pkl
-pipeline.pkl
-
-# Generated output files
-output.csv
-
 # Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Virtual environment
+myenv/
+venv/
+.venv/
+
+# Generated output files
+output.csv
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
@@ -21,7 +22,3 @@ __pycache__/
 # OS files
 .DS_Store
 Thumbs.db
-
-# Large datasets (consider using smaller samples for repo)
-# housing.csv  # Uncomment if you want to include full dataset
-# input.csv    # Uncomment if you want to include test data

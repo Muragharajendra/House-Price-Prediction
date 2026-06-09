@@ -13,8 +13,12 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import root_mean_squared_error
 from sklearn.model_selection import cross_val_score
 
-MODEL_FILE = "Training_ML_02/Model_02_03_vscode/model.pkl"
-PIPELINE_FILE = 'Training_ML_02/Model_02_03_vscode/pipeline.pkl'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODEL_FILE = os.path.join(BASE_DIR, "model.pkl")
+PIPELINE_FILE = os.path.join(BASE_DIR, "pipeline.pkl")
+HOUSING_CSV = os.path.join(BASE_DIR, "housing.csv")
+INPUT_CSV = os.path.join(BASE_DIR, "input.csv")
+OUTPUT_CSV = os.path.join(BASE_DIR, "output.csv")
 
 def build_pipeline(num_attribs, cat_attribs):
     # For numerical columns
@@ -38,7 +42,7 @@ def build_pipeline(num_attribs, cat_attribs):
 
 if not os.path.exists(MODEL_FILE):
     # Lets train the model
-    housing = pd.read_csv("Training_ML_02/Model_02_03_vscode/housing.csv")
+    housing = pd.read_csv(HOUSING_CSV)
 
     # Create a stratified test set
     housing['income_cat'] = pd.cut(housing["median_income"], 
@@ -48,7 +52,7 @@ if not os.path.exists(MODEL_FILE):
     split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
 
     for train_index, test_index in split.split(housing, housing['income_cat']):
-        housing.loc[test_index].drop("income_cat", axis=1).to_csv("Training_ML_02/Model_02_03_vscode/input.csv", index=False) 
+        housing.loc[test_index].drop("income_cat", axis=1).to_csv(INPUT_CSV, index=False) 
         housing = housing.loc[train_index].drop("income_cat", axis=1)  
     
     housing_labels = housing["median_house_value"].copy()
@@ -63,7 +67,7 @@ if not os.path.exists(MODEL_FILE):
     model = RandomForestRegressor(random_state=42)
     model.fit(housing_prepared, housing_labels)
 
-    joblib.dump(model, MODEL_FILE)
+    joblib.dump(model, MODEL_FILE, compress=3)
     joblib.dump(pipeline, PIPELINE_FILE)
     print("Model is trained. Congrats!")
 else:
@@ -71,10 +75,10 @@ else:
     model = joblib.load(MODEL_FILE)
     pipeline = joblib.load(PIPELINE_FILE)
 
-    input_data = pd.read_csv('Training_ML_02/Model_02_03_vscode/input.csv')
+    input_data = pd.read_csv(INPUT_CSV)
     transformed_input = pipeline.transform(input_data)
     predictions = model.predict(transformed_input)
     input_data['median_house_value'] = predictions
 
-    input_data.to_csv("Training_ML_02/Model_02_03_vscode/output.csv", index=False)
+    input_data.to_csv(OUTPUT_CSV, index=False)
     print("Inference is complete, results saved to output.csv Enjoy!")
