@@ -2,6 +2,13 @@
 
 A machine learning project that predicts median house values in California using various housing features. This project implements a Random Forest Regressor trained on the California Housing dataset to provide accurate price predictions.
 
+
+## Deployed Application
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Muragharajendra/House-Price-Prediction/master/Deployed_Snapshot.png" width="900">
+</p>
+
 ## Features
 
 - **Data Preprocessing**: Automated pipeline for handling numerical and categorical features
