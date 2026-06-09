@@ -1,7 +1,25 @@
 import streamlit as st
 import requests
+import pandas as pd
+import joblib
+import os
 
 API_URL = "http://127.0.0.1:8000/predict"
+
+@st.cache_resource
+def load_local_model_and_pipeline():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.join(base_dir, "model.pkl")
+    pipeline_path = os.path.join(base_dir, "pipeline.pkl")
+    
+    if os.path.exists(model_path) and os.path.exists(pipeline_path):
+        try:
+            model = joblib.load(model_path)
+            pipeline = joblib.load(pipeline_path)
+            return model, pipeline
+        except Exception as e:
+            st.error(f"Error loading model/pipeline: {e}")
+    return None, None
 
 st.set_page_config(
     page_title="House Price Prediction",
@@ -89,26 +107,41 @@ if st.button("Predict House Price", use_container_width=True):
     }
 
     try:
-        response = requests.post(API_URL, json=payload)
+        # Try to contact FastAPI backend first
+        response = requests.post(API_URL, json=payload, timeout=2.0)
 
         if response.status_code == 200:
             prediction = response.json()["prediction"]
-
-            st.success("Prediction completed successfully!")
-
+            st.success("Prediction completed successfully (via FastAPI Backend)!")
             st.metric(
                 label="Predicted House Price",
                 value=f"${prediction:,.2f}"
             )
-
         else:
             st.error(response.json())
 
-    except requests.exceptions.ConnectionError:
-        st.error(
-            "Unable to connect to FastAPI server. "
-            "Make sure FastAPI is running on port 8000."
-        )
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+        # FastAPI backend not reachable; fall back to local inference
+        model, pipeline = load_local_model_and_pipeline()
+        if model is not None and pipeline is not None:
+            try:
+                prediction_data = pd.DataFrame([payload])
+                transformed_data = pipeline.transform(prediction_data)
+                predicted_data = model.predict(transformed_data)
+                prediction = float(predicted_data[0])
+
+                st.success("Prediction completed successfully (via Direct Inference Fallback)!")
+                st.metric(
+                    label="Predicted House Price",
+                    value=f"${prediction:,.2f}"
+                )
+            except Exception as local_err:
+                st.error(f"Failed to perform direct inference: {local_err}")
+        else:
+            st.error(
+                "Unable to connect to FastAPI server on port 8000, and model files "
+                "(model.pkl / pipeline.pkl) were not found locally for fallback inference."
+            )
 
     except Exception as e:
         st.error(f"Error: {e}")

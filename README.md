@@ -54,21 +54,37 @@ This will:
 
 ### Running the Streamlit App
 
-The project includes a Streamlit frontend that loads the trained `model.pkl` and `pipeline.pkl` and exposes an interactive UI. To run locally:
+The project includes a Streamlit frontend that can connect to the FastAPI backend or run predictions directly using the serialized models (`model.pkl` and `pipeline.pkl`).
 
+To run locally:
 ```bash
-# after creating model artifacts (see Training section)
+# Optional: start the FastAPI backend (in one terminal)
+uvicorn app:app --host 0.0.0.0 --port 8000
+
+# Start the Streamlit frontend (in another terminal)
 streamlit run frontend.py --server.port 8501
 ```
 
-Enter feature values in the UI and click "Predict House Price"; the app will load `model.pkl` and `pipeline.pkl` from the repository directory and display the predicted median house value.
+If the FastAPI backend is running, the Streamlit app will query it. If the backend is not running or unreachable, the Streamlit app gracefully falls back to **direct local inference** using `model.pkl` and `pipeline.pkl` in the repository directory.
 
 If `model.pkl` or `pipeline.pkl` are missing, run:
-
 ```bash
 python Main.py
 ```
 to train the model and create the artifacts.
+
+## Streamlit Community Cloud Deployment
+
+To deploy this application to **Streamlit Community Cloud** (share.streamlit.io):
+
+1. **Push your code to GitHub**: Make sure `model.pkl`, `pipeline.pkl`, `requirements.txt`, and `frontend.py` are committed and pushed to your GitHub repository (`https://github.com/Muragharajendra/House-Price-Prediction`).
+2. **Deploy on Streamlit Cloud**:
+   - Go to [Streamlit Community Cloud](https://share.streamlit.io/) and log in.
+   - Click **New app**.
+   - Select your repository (`Muragharajendra/House-Price-Prediction`), branch, and set the **Main file path** to `frontend.py`.
+   - Click **Deploy!**
+
+The app will install the dependencies from `requirements.txt` and launch. Since the FastAPI backend won't be running on Streamlit Cloud, the app will automatically fall back to **Direct Inference Mode** and perform the predictions directly inside the Streamlit server!
 
 ## Docker Deployment
 
