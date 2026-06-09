@@ -9,6 +9,11 @@ A machine learning project that predicts median house values in California using
   <img src="https://raw.githubusercontent.com/Muragharajendra/House-Price-Prediction/master/Deployed_Snapshot.png" width="900">
 </p>
 
+
+## Live Demo
+
+🔗 **Application URL:**  
+https://muragharajendra-house-price-prediction-frontend-lripej.streamlit.app/
 ## Features
 
 - **Data Preprocessing**: Automated pipeline for handling numerical and categorical features
