@@ -112,7 +112,7 @@ if st.button("Predict House Price", use_container_width=True):
 
         if response.status_code == 200:
             prediction = response.json()["prediction"]
-            st.success("Prediction completed successfully (via FastAPI Backend)!")
+            st.success("Prediction completed successfully!")
             st.metric(
                 label="Predicted House Price",
                 value=f"${prediction:,.2f}"
@@ -130,7 +130,7 @@ if st.button("Predict House Price", use_container_width=True):
                 predicted_data = model.predict(transformed_data)
                 prediction = float(predicted_data[0])
 
-                st.success("Prediction completed successfully (via Direct Inference Fallback)!")
+                st.success("Prediction completed successfully!")
                 st.metric(
                     label="Predicted House Price",
                     value=f"${prediction:,.2f}"
